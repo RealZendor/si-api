@@ -140,15 +140,11 @@ paths:
       security:
         - UserPwdBase64: []
       tags:
-        - info
-        - kunde
+        - Customer
     parameters: []
   /cust/courses:
     get:
       summary: Get current courses of a user's students
-      tags:
-        - info
-        - kunde
       responses:
         '200':
           description: OK
@@ -196,6 +192,8 @@ paths:
       description: Get IDs of all classes/courses a specific user (dance studio's customer's student) has subscribed for. The user ID is calculated from Authorization string.
       security:
         - UserPwdBase64: []
+      tags:
+        - Customer
 components:
   schemas:
     User:
@@ -261,7 +259,7 @@ components:
       scheme: basic
   responses: {}
 tags:
-  - name: info
-    description: getting information
-  - name: kunde
-    description: concerning a dance studio's customer
+  - name: Customer
+    description: Access »/cust« endpoints
+  - name: Public
+    description: Access »/pub« endpoints
