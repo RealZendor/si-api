@@ -1,0 +1,267 @@
+openapi: 3.1.0
+x-stoplight:
+  id: ol7skl20b16sm
+info:
+  title: SI API 1.0
+  version: '1.0'
+  summary: Exchange data with the StudioIntern SaaS app
+  description: This API works as in addition to the StudioIntern main application.
+  contact:
+    name: Support
+    url: api.studiointern.de
+    email: support@studiointern.de
+servers:
+  - url: 'https://api.studiointern.de/{customer_shortname}/v1'
+    description: Demo
+paths:
+  /cust/user:
+    post:
+      summary: Change user's password
+      operationId: post-user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples: {}
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: integer
+                x-examples:
+                  Example 1:
+                    message: Password updated
+                    code: 0
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '412':
+          description: Precondition Failed
+        '417':
+          description: To Less Parameters
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                new_password:
+                  type: string
+                new_password2:
+                  type: string
+        description: 'Post email address (for additonal user verification), new password and new password2 (for verification)'
+      description: Change password for a user (dance studio's customer) that has been authorized by Authorization header string.
+      security:
+        - UserPwdBase64: []
+    get:
+      summary: Get user details
+      operationId: get-user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    message: OK
+                    code: 0
+                    user:
+                      id: '50066'
+                      firstName: Barbara
+                      lastName: Aachen
+                      email: webmaster@vent.net
+                      students:
+                        - id: '240'
+                          firstName: Barbara
+                          lastName: Aachen
+                          dayOfBirth: '1999-07-12'
+                          email: ''
+                        - id: '241'
+                          firstName: Krawehl
+                          lastName: Aachen
+                          dayOfBirth: '1998-03-12'
+                          email: ''
+                        - id: '109'
+                          firstName: Melusine
+                          lastName: Aachen
+                          dayOfBirth: '2002-01-17'
+                          email: null
+                      active: true
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: integer
+                  user:
+                    $ref: '#/components/schemas/User'
+              examples:
+                Example 1:
+                  value:
+                    message: OK
+                    code: 0
+                    user:
+                      id: '1234'
+                      firstName: Barbara
+                      lastName: Aachen
+                      email: baachen@mymail.de
+                      students:
+                        id: '12'
+                        firstName: Susi
+                        lastName: Aachen
+                        dayOfBirth: '2010-10-12'
+                        email: ''
+                      active: true
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Not Found
+        '417':
+          description: Invalid parameter
+        '500':
+          description: Internal Server Error
+      description: Get some information on a specific user (dance studio's customer). The user ID is calculated from Authorization header string.
+      security:
+        - UserPwdBase64: []
+      tags:
+        - info
+        - kunde
+    parameters: []
+  /cust/courses:
+    get:
+      summary: Get current courses of a user's students
+      tags:
+        - info
+        - kunde
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: integer
+                  classes:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  Example 1:
+                    message: OK
+                    code: 0
+                    classes:
+                      - '3'
+                      - '2'
+                      - '14'
+              examples:
+                Example 1:
+                  value:
+                    message: OK
+                    code: 0
+                    classes:
+                      - '3'
+                      - '2'
+                      - '14'
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: get-cust-courses
+      description: Get IDs of all classes/courses a specific user (dance studio's customer's student) has subscribed for. The user ID is calculated from Authorization string.
+      security:
+        - UserPwdBase64: []
+components:
+  schemas:
+    User:
+      type: object
+      x-examples:
+        Example 1:
+          id: '50066'
+          firstName: Barbara
+          lastName: Aachen
+          email: webmaster@vent.net
+          active: true
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        students:
+          $ref: '#/components/schemas/Student'
+        active:
+          type: boolean
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dayOfBirth:
+          type: string
+        email:
+          type: string
+      x-examples:
+        Example 1:
+          id: '241'
+          firstName: Krawehl
+          lastName: Aachen
+          dayOfBirth: '1998-03-12'
+          email: ''
+    Response:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+      x-examples:
+        Example 1:
+          message: Password updated
+          code: 0
+  securitySchemes:
+    APIKey1:
+      name: Authorization
+      type: apiKey
+      in: header
+    UserPwdBase64:
+      type: http
+      scheme: basic
+  responses: {}
+tags:
+  - name: info
+    description: getting information
+  - name: kunde
+    description: concerning a dance studio's customer
