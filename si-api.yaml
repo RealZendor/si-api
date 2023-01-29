@@ -5,14 +5,15 @@ info:
   title: SI API 1.0
   version: '1.0'
   summary: Exchange data with the StudioIntern SaaS app
-  description: This API works as in addition to the StudioIntern main application.
+  description: 'This API works only as an addition to the StudioIntern main application. This means that you have to be a StudioIntern customer in order to use this API. But, there is a free 2 month test period available.'
   contact:
     name: Support
     url: api.studiointern.de
     email: support@studiointern.de
+  termsOfService: 'https://www.ballettschul-software.de/agb.php'
 servers:
   - url: 'https://api.studiointern.de/{customer_shortname}/v1'
-    description: Demo
+    description: Generic
 paths:
   /cust/user:
     post:
@@ -196,6 +197,183 @@ paths:
         - UserPwdBase64: []
       tags:
         - Customer
+  '/pub/events/{limit}':
+    get:
+      summary: Get upcoming events
+      tags:
+        - Public
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: integer
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        start:
+                          type: string
+                        end:
+                          type: string
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        place:
+                          type: string
+                        is_holiday:
+                          type: string
+                x-examples:
+                  Example 1:
+                    message: OK
+                    code: 0
+                    events:
+                      - id: 07b74776-6b04-435f-9ca3-4114c39b9826
+                        start: '2023-02-13 00:00:00'
+                        end: '2023-02-13 00:00:00'
+                        title: Winterferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: F_2023_termin63cb4bd5651d7@schulferien.org
+                        start: '2023-02-13 00:00:00'
+                        end: '2023-02-25 00:00:00'
+                        title: Winterferien 2023 Sachsen
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: 6b793626-b890-48b9-8862-5f64031dd9a3
+                        start: '2023-04-07 00:00:00'
+                        end: '2023-04-07 00:00:00'
+                        title: Osterferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: F_2023_termin63cb4bd565245@schulferien.org
+                        start: '2023-04-07 00:00:00'
+                        end: '2023-04-16 00:00:00'
+                        title: Osterferien 2023 Sachsen
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: 9d616579-3c70-456e-80e0-9294b54fbcbe
+                        start: '2023-05-19 00:00:00'
+                        end: '2023-05-19 00:00:00'
+                        title: Pfingstferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: F_2023_termin63cb4bd565284@schulferien.org
+                        start: '2023-05-19 00:00:00'
+                        end: '2023-05-20 00:00:00'
+                        title: Pfingstferien 2023 Sachsen
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: 8d3e2c3c-de45-437f-99d1-f795ec250023
+                        start: '2023-07-10 00:00:00'
+                        end: '2023-07-10 00:00:00'
+                        title: Sommerferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: F_2023_termin63cb4bd5652ad@schulferien.org
+                        start: '2023-07-10 00:00:00'
+                        end: '2023-08-19 00:00:00'
+                        title: Sommerferien 2023 Sachsen
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: 6712a36d-6264-4acf-ba7c-923f557e8126
+                        start: '2023-10-02 00:00:00'
+                        end: '2023-10-02 00:00:00'
+                        title: Herbstferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: F_2023_termin63cb4bd5652d4@schulferien.org
+                        start: '2023-10-02 00:00:00'
+                        end: '2023-10-15 00:00:00'
+                        title: Herbstferien 2023 Sachsen
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: F_2023_termin63cb4bd56532f@schulferien.org
+                        start: '2023-10-30 00:00:00'
+                        end: '2023-10-31 00:00:00'
+                        title: Herbstferien 2023 Sachsen
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: 227ef203-fd50-410c-88f7-9cfe72a1a116
+                        start: '2023-11-30 00:00:00'
+                        end: '2023-11-30 00:00:00'
+                        title: Herbstferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: df7d761c-752f-47f5-9e98-68bd7b0dce70
+                        start: '2023-12-23 00:00:00'
+                        end: '2023-12-23 00:00:00'
+                        title: Weihnachtsferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: F_2023_termin63cb4bd565371@schulferien.org
+                        start: '2023-12-23 00:00:00'
+                        end: '2024-01-03 00:00:00'
+                        title: Weihnachtsferien 2023 Sachsen
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+              examples:
+                Example 1:
+                  value:
+                    message: OK
+                    code: 0
+                    events:
+                      - id: 07b74776-6b04-435f-9ca3-4114c39b9826
+                        start: '2023-02-13 00:00:00'
+                        end: '2023-02-13 00:00:00'
+                        title: Winterferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+                      - id: 6b793626-b890-48b9-8862-5f64031dd9a3
+                        start: '2023-04-07 00:00:00'
+                        end: '2023-04-07 00:00:00'
+                        title: Osterferien
+                        description: ''
+                        place: ''
+                        is_holiday: '1'
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      operationId: get-pub-events
+      description: 'This endpoint delivers all events that are in the studio''s events calendar. These are mainly holidays, but can also include other dates. You can restrict the number of results by providing the optional »limit« parameter.'
+    parameters:
+      - schema:
+          type: integer
+        name: limit
+        in: path
+        description: Number of events to return
 components:
   schemas:
     User:
@@ -256,9 +434,11 @@ components:
       name: Authorization
       type: apiKey
       in: header
+      description: ''
     UserPwdBase64:
       type: http
       scheme: basic
+      description: ''
   responses: {}
 tags:
   - name: Customer
