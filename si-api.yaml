@@ -66,6 +66,8 @@ paths:
       description: Change password for a user (dance studio's customer) that has been authorized by Authorization header string.
       security:
         - UserPwdBase64: []
+      tags:
+        - Customer
     get:
       summary: Get user details
       operationId: get-user
