@@ -197,7 +197,7 @@ paths:
         - UserPwdBase64: []
       tags:
         - Customer
-  '/pub/events/{limit}':
+  '/pub/events/{limit}/{filter}':
     get:
       summary: Get upcoming events
       tags:
@@ -367,13 +367,18 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get-pub-events
-      description: 'This endpoint delivers all events that are in the studio''s events calendar. These are mainly holidays, but can also include other dates. You can restrict the number of results by providing the optional »limit« parameter.'
+      description: 'This endpoint delivers all events that are in the studio''s events calendar. These are mainly holidays, but can also include other dates. You can restrict the number of results by providing the optional »limit« parameter. You can also filter results by a string. The filter will apply to the »title« property. Use urlencoded filter string if it contains whitespaces or slashes.'
     parameters:
       - schema:
           type: integer
         name: limit
         in: path
-        description: Number of events to return
+        description: Number of events to return; value of 0 means no limit
+      - schema:
+          type: string
+        name: filter
+        in: path
+        description: Return only events which matches this parameter in title field
 components:
   schemas:
     User:
