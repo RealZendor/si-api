@@ -203,7 +203,7 @@ paths:
         - UserPwdBase64: []
       tags:
         - Customer
-  /pub/events:
+  '/pub/events/{limit}/{filter}':
     get:
       summary: Get upcoming events
       tags:
