@@ -373,7 +373,8 @@ paths:
   /pub/courses:
     get:
       summary: Get all courses of the studio
-      tags: []
+      tags:
+        - Public
       responses:
         '200':
           description: OK
@@ -408,7 +409,8 @@ paths:
   /pub/nextcourses:
     get:
       summary: Get upcoming classes
-      tags: []
+      tags:
+        - Public
       responses:
         '200':
           description: OK
