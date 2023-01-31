@@ -359,6 +359,8 @@ paths:
           description: Internal Server Error
       operationId: get-pub-events
       description: 'This endpoint delivers all events that are in the studio''s events calendar. These are mainly holidays, but can also include other dates. You can restrict the number of results by providing the optional »limit« parameter. You can also filter results by a string. The filter will apply to the »title« property. Use urlencoded filter string if it contains whitespaces or slashes.'
+      security:
+        - APIKey1: []
     parameters:
       - schema:
           type: integer
@@ -406,6 +408,8 @@ paths:
           description: Internal Server Error
       operationId: get-pub-courses
       description: Retrieve all courses (classes) that are currently offered by the studio with detail information. The value of the »description« data field depends on the studio's preference setting »Show description in course schedule?«.
+      security:
+        - APIKey1: []
   /pub/nextcourses:
     get:
       summary: Get upcoming classes
