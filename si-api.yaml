@@ -733,11 +733,13 @@ components:
       in: path
       schema:
         type: number
+      description: Return not more than this number of records
     filter:
       name: filter
       in: path
       schema:
         type: string
+      description: Return only records that match this string in title field
 tags:
   - name: Customer
     description: Access »/cust« endpoints
