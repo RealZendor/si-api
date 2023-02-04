@@ -358,7 +358,13 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get-pub-events
-      description: 'This endpoint delivers all events that are in the studio''s events calendar. These are mainly holidays, but can also include other dates. You can restrict the number of results by providing the optional »limit« parameter. You can also filter results by a string. The filter will apply to the »title« property. Use urlencoded filter string if it contains whitespaces or slashes.'
+      description: |-
+        This endpoint delivers all events that are in the studio's events calendar. These are mainly holidays, but can also include other dates. You can restrict the number of results by providing the optional »limit« parameter. You can also filter results by a string. The filter will apply to the »title« property. Use urlencoded filter string if it contains whitespaces or slashes.
+        ## Parameters
+        ### limit
+        An integer number that set the maximum number of records to return.
+        ### filter
+        A string. Records will be filtered by this string for the `title` field. You have to urlencode the string if it contains characters that will break the query string (e.g. whitespace).
       security:
         - APIKey1: []
     parameters:
@@ -472,10 +478,11 @@ paths:
       description: Retrieve course list for courses that have a start date in the future (starting from today). Only for StudioIntern instances that run in "real calendar" mode (will return a 204 No Content header otherwise).
       security:
         - APIKey1: []
-  /pub/schedule:
+  '/pub/schedule/{period}/{date}':
     get:
       summary: Get classes' schedule
-      tags: []
+      tags:
+        - Public
       responses:
         '200':
           description: OK
@@ -515,8 +522,16 @@ paths:
       security:
         - APIKey1: []
     parameters:
-      - $ref: '#/components/parameters/period'
-      - $ref: '#/components/parameters/date'
+      - name: period
+        in: path
+        schema:
+          type: string
+        description: '[today|weekday|weekofdate] default: today'
+      - name: date
+        in: path
+        schema:
+          type: string
+        description: 'Format: yyyy-mm-dd. Mandatory if parameter period ist set to »weekofdate«.'
 components:
   schemas:
     User:
