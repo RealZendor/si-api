@@ -578,6 +578,48 @@ paths:
         schema:
           type: string
         description: 'Format: yyyy-mm-dd. Mandatory if parameter period ist set to »weekofdate«.'
+  /pub/studio:
+    get:
+      summary: Get information about the dance studio
+      tags:
+        - Public
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: integer
+                  signature:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: OK
+                    code: 0
+                    signature: "Tanzwerk Leipzig UG (haftungsbeschränkt)\r\nhttps://Leipziger-Ballettschule.de\r\nRosa-Luxemburg-Str. 21, 04103 Leipzig\r\nTel. 0341 - 24 33 66 36; Amtsgericht Leipzig, HRB 30795\r\nSitz der Gesellschaft: Leipzig, Geschäftsführer: Andreas Vent-Schmidt"
+              examples:
+                Example 1:
+                  value:
+                    message: OK
+                    code: 0
+                    signature: "Tanzwerk Leipzig UG (haftungsbeschränkt)\r\nhttps://Leipziger-Ballettschule.de\r\nRosa-Luxemburg-Str. 21, 04103 Leipzig\r\nTel. 0341 - 24 33 66 36; Amtsgericht Leipzig, HRB 30795\r\nSitz der Gesellschaft: Leipzig, Geschäftsführer: Andreas Vent-Schmidt"
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      operationId: get-pub-studio
+      description: 'Returns some information about your studio. For now (version 1.0), there are no parameters available and only the mail signature is returned.'
+      security:
+        - APIKey1: []
 components:
   schemas:
     User:
