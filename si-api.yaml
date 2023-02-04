@@ -620,6 +620,38 @@ paths:
       description: 'Returns some information about your studio. For now (version 1.0), there are no parameters available and only the mail signature is returned.'
       security:
         - APIKey1: []
+  /pub/user:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-pub-user
+    post:
+      summary: Create new user (studio's customer)
+      operationId: post-pub-user
+      responses:
+        '200':
+          description: OK
+      tags:
+        - Public
+      description: |-
+        This endpoint creates a new end customer (user). Please don't mix up with StudioIntern's customer. 
+        The intention of this endpoint is to send data from contact forms on the public studio's website where people fill in the form in order to ask for a test class. 
+        Many of the StudioIntern's [extra modules](https://www.ballettschul-software.de/zusatzmodule.php) use this endpoint, too. 
+      security:
+        - APIKey1: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                anrede:
+                  type: string
+                  minLength: 2
+                  maxLength: 12
+              required:
+                - anrede
 components:
   schemas:
     User:
