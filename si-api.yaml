@@ -472,6 +472,51 @@ paths:
       description: Retrieve course list for courses that have a start date in the future (starting from today). Only for StudioIntern instances that run in "real calendar" mode (will return a 204 No Content header otherwise).
       security:
         - APIKey1: []
+  /pub/schedule:
+    get:
+      summary: Get classes' schedule
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseSchedule'
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '417':
+          description: Expectation Failed
+        '500':
+          description: Internal Server Error
+      operationId: get-pub-schedule
+      description: |-
+        Delivers the day or week schedule for all classes that will take place in the specific week. If no courses takes place in the specified period, the API will return a `204 No Content` response header.
+        ## Parameters
+        ### period
+        Can be one of these values: `today`, `week`, `weekofdate`. Defaults to `today`. 
+        #### today
+        Get the schedule of the current day.
+        #### week
+        Get the schedule of the current week.
+        #### weekofdate
+        Get the schedule of the week in which the given date (next parameter) falls.
+        <!-- theme: warning -->
+        > #### Attention!
+        >
+        > This parameter is intended for the »real calendar« mode only in which StudioIntern is running. Since in »abstract week« mode every week has the same schedule, the `weekofdate` parameter makes no sense in this case. It will work, but the date is silently ignored.
+        ### date
+        Date in »SQL format« `yyyy-mm-dd`. Example: `2023-02-20`. Other date formats will cause a 417 response code.
+        The given date will be ignored if the »period« parameter is not set to `weekofdate`. If the »period« parameter ist set to `weekofdate`and no date was given, the API will return a 417 response code.
+      security:
+        - APIKey1: []
+    parameters:
+      - $ref: '#/components/parameters/period'
+      - $ref: '#/components/parameters/date'
 components:
   schemas:
     User:
@@ -716,6 +761,74 @@ components:
                 - date: '2023-04-28 19:00:00.000000'
                   timezone_type: 3
                   timezone: Europe/Berlin
+    CourseSchedule:
+      type: object
+      x-examples:
+        Example 1:
+          id: '154'
+          dow: Montag
+          dow_short: Mo
+          date: '2023-01-30'
+          start_time: '10:00:00'
+          end_time: '10:55:00'
+          title: Ballett Medium Level B
+          description: VK erforderlich
+          extra: Ballett mit Vorkenntnissen bis Mittelstufe
+          teacher:
+            - Susanne
+            - Kuchler
+          more_info: ''
+          room: Saal 1
+          hours: '1.00'
+          color: '#e4d040'
+      properties:
+        id:
+          type: integer
+        dow:
+          type: string
+        dow_short:
+          type: string
+        date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        extra:
+          type: string
+        teacher:
+          type: array
+          items:
+            type: string
+        more_info:
+          type: string
+        room:
+          type: string
+        hours:
+          type: number
+        color:
+          type: string
+      examples:
+        - id: 154
+          dow: Montag
+          dow_short: Mo
+          date: '2023-01-30'
+          start_time: '10:00:00'
+          end_time: '10:55:00'
+          title: Ballett Medium Level B
+          description: VK erforderlich
+          extra: Ballett mit Vorkenntnissen bis Mittelstufe
+          teacher:
+            - Vorname
+            - Nachname
+          more_info: ''
+          room: Saal 1
+          hours: 1
+          color: '#e4d040'
   securitySchemes:
     APIKey1:
       name: Authorization
@@ -740,6 +853,18 @@ components:
       schema:
         type: string
       description: Return only records that match this string in title field
+    period:
+      name: period
+      in: path
+      schema:
+        type: string
+      description: '[today|weekday|weekofdate] default: today'
+    date:
+      name: date
+      in: path
+      schema:
+        type: string
+      description: 'Format: yyyy-mm-dd. Mandatory if parameter period ist set to »weekofdate«.'
 tags:
   - name: Customer
     description: Access »/cust« endpoints
