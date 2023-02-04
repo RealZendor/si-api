@@ -69,7 +69,7 @@ paths:
                   email: myname@mail.com
                   new_password: super!secret!
                   new_password2: super!secret!
-        description: 'Post email address (for additonal user verification), new password and new password2 (for verification)'
+        description: 'Post email address (for additonal user verification), new password and new password2 (for verification).'
       description: Change password for a user (dance studio's customer) that has been authorized by Authorization header string.
       security:
         - UserPwdBase64: []
@@ -362,9 +362,9 @@ paths:
         This endpoint delivers all events that are in the studio's events calendar. These are mainly holidays, but can also include other dates. You can restrict the number of results by providing the optional »limit« parameter. You can also filter results by a string. The filter will apply to the »title« property. Use urlencoded filter string if it contains whitespaces or slashes.
         ## Parameters
         ### limit
-        An integer number that set the maximum number of records to return.
+        An integer number that sets the maximum number of records to return.
         ### filter
-        A string. Records will be filtered by this string for the `title` field. You have to urlencode the string if it contains characters that will break the query string (e.g. whitespace).
+        A string. Records will be filtered by this string against the `title` field. You have to urlencode the string if it contains characters that will break the query string (e.g. whitespace). It's a goog idea to **always** urlencode the string.
       security:
         - APIKey1: []
     parameters:
@@ -489,7 +489,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CourseSchedule'
+                type: object
+                x-examples:
+                  Example 1:
+                    message: OK
+                    code: 0
+                    events:
+                      - id: 139
+                        dow: Montag
+                        dow_short: Mo
+                        date: ''
+                        start_time: '10:00:00'
+                        end_time: '10:55:00'
+                        title: Ballett Beginner B
+                        description: keine/geringe VK
+                        extra: 'Ballett für Erwachsene, Anfänger'
+                        teacher:
+                          - Yu-Ching
+                          - Tsao
+                        more_info: ''
+                        room: Saal 1
+                        hours: 1
+                        color: '#e4d040'
+                      - id: 123
+                        dow: Montag
+                        dow_short: Mo
+                        date: ''
+                        start_time: '11:00:00'
+                        end_time: '11:55:00'
+                        title: K+D E
+                        description: keine VK
+                        extra: Kraft+Dehnung
+                        teacher:
+                          - Yu-Ching
+                          - Tsao
+                        more_info: ''
+                        room: Saal 1
+                        hours: 1
+                        color: '#e4d040'
+                properties:
+                  message:
+                    type: string
+                  code:
+                    type: integer
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourseSchedule'
         '204':
           description: No Content
         '401':
@@ -796,6 +842,23 @@ components:
           room: Saal 1
           hours: '1.00'
           color: '#e4d040'
+      examples:
+        - id: 154
+          dow: Montag
+          dow_short: Mo
+          date: '2023-01-30'
+          start_time: '10:00:00'
+          end_time: '10:55:00'
+          title: Ballett Medium Level B
+          description: VK erforderlich
+          extra: Ballett mit Vorkenntnissen bis Mittelstufe
+          teacher:
+            - Vorname
+            - Nachname
+          more_info: ''
+          room: Saal 1
+          hours: 1
+          color: '#e4d040'
       properties:
         id:
           type: integer
@@ -805,6 +868,7 @@ components:
           type: string
         date:
           type: string
+          description: Empty if StudioIntern runs in »abstract week« mode and parameter »period« has value `week`.
         start_time:
           type: string
         end_time:
@@ -827,23 +891,6 @@ components:
           type: number
         color:
           type: string
-      examples:
-        - id: 154
-          dow: Montag
-          dow_short: Mo
-          date: '2023-01-30'
-          start_time: '10:00:00'
-          end_time: '10:55:00'
-          title: Ballett Medium Level B
-          description: VK erforderlich
-          extra: Ballett mit Vorkenntnissen bis Mittelstufe
-          teacher:
-            - Vorname
-            - Nachname
-          more_info: ''
-          room: Saal 1
-          hours: 1
-          color: '#e4d040'
   securitySchemes:
     APIKey1:
       name: Authorization
