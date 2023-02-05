@@ -141,17 +141,29 @@ paths:
           description: Forbidden
         '404':
           description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
         '417':
           description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
         '500':
           description: Internal Server Error
-      description: Get some information on a specific user (dance studio's customer). The user ID is calculated from Authorization header string.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+      description: Get some information on a specific user (dance studio's customer). The user ID is retrieved from Authorization header string.
       security:
         - UserPwdBase64: []
       tags:
         - Customer
     parameters: []
-  /cust/courses:
+  '/cust/courses/{id}':
     get:
       summary: Get current courses of a user's students
       responses:
@@ -189,20 +201,42 @@ paths:
                       - '14'
         '204':
           description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
         '404':
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
         '500':
           description: Internal Server Error
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
       operationId: get-cust-courses
-      description: Get IDs of all classes/courses a specific user (dance studio's customer's student) has subscribed for. The user ID is calculated from Authorization string.
+      description: |-
+        Get IDs of all classes/courses a specific user (dance studio's customer's student) has subscribed for. The user ID is calculated from Authorization string.
+        ### Parameter
+        If the id parameter is given, return only courses of the student with `id`.
       security:
         - UserPwdBase64: []
       tags:
         - Customer
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'ID of user or student, depending of context'
   '/pub/events/{limit}/{filter}':
     get:
       summary: Get upcoming events
@@ -538,14 +572,26 @@ paths:
                       $ref: '#/components/schemas/CourseSchedule'
         '204':
           description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
         '417':
           description: Expectation Failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
         '500':
           description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
       operationId: get-pub-schedule
       description: |-
         Delivers the day or week schedule for all classes that will take place in the specific week. If no courses takes place in the specified period, the API will return a `204 No Content` response header.
@@ -621,17 +667,38 @@ paths:
       security:
         - APIKey1: []
   /pub/user:
-    get:
-      summary: Your GET endpoint
-      tags: []
-      responses: {}
-      operationId: get-pub-user
     post:
       summary: Create new user (studio's customer)
       operationId: post-pub-user
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '417':
+          description: Expectation Failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
       tags:
         - Public
       description: |-
@@ -650,8 +717,129 @@ paths:
                   type: string
                   minLength: 2
                   maxLength: 12
+                  description: Salutation
+                titel:
+                  type: string
+                  maxLength: 120
+                  description: Academic title
+                vorname:
+                  type: string
+                  maxLength: 64
+                  description: First name
+                nachname:
+                  type: string
+                  maxLength: 48
+                  description: 'Last '
+                adresse:
+                  type: string
+                  maxLength: 64
+                  description: Address (Street + Number)
+                adresszusatz:
+                  type: string
+                  maxLength: 64
+                  description: Additional address information
+                plz:
+                  type: string
+                  maxLength: 8
+                  description: ZIP code
+                ort:
+                  type: string
+                  maxLength: 64
+                  description: City / Place
+                mobil:
+                  type: string
+                  maxLength: 64
+                  description: Mobile phone number
+                email:
+                  type: string
+                  maxLength: 120
+                  description: Email a
+                bemerkungen:
+                  type: string
+                  description: Remarks
+                sch_vorname:
+                  type: array
+                  description: 'Students (children''s) first '
+                  items:
+                    type: string
+                    maxLength: 64
+                sch_nachname:
+                  type: array
+                  description: Students (children's) last name
+                  items:
+                    type: string
+                    maxLength: 48
+                sch_geb_tag:
+                  type: array
+                  description: 'Students (children''s) date of birth, day'
+                  items:
+                    type: string
+                    minLength: 2
+                    maxLength: 2
+                    deprecated: true
+                sch_geb_monat:
+                  type: array
+                  description: 'Students (children''s) date of birth, month'
+                  items:
+                    type: string
+                    minLength: 2
+                    maxLength: 2
+                    deprecated: true
+                sch_geb_jahr:
+                  type: array
+                  description: 'Students (children''s) date of birth, year'
+                  items:
+                    type: string
+                    minLength: 4
+                    maxLength: 4
+                    deprecated: true
+                sch_geb:
+                  type: string
+                  format: date
+                  example: '2023-01-12'
+                  pattern: '^[\d{4}-\d{2}-\d{2}]$'
+                  minLength: 10
+                  maxLength: 10
+                  description: Students (children's) date of birth
+                notify:
+                  type: integer
+                  minimum: 0
+                  maximum: 1
+                  description: 'If set to »1«, the studio will receive a message when new user was created'
+                notify_error:
+                  type: integer
+                  minimum: 0
+                  maximum: 1
+                  description: 'If set to »1«, the studio will receive a message in case of an error'
+                customer_message:
+                  type: string
+                  description: Additonal message that will be stored in the »remarks« filed of the customer's recoord.
               required:
                 - anrede
+                - vorname
+                - nachname
+                - email
+        description: |-
+          ## General usage
+          This endpoint is intented to receive data from an online contact form. You must name the form fields exactly as described here. Though in this API documentation all fields are part of an anonymous object, in real world you will not send an object but just regular POST data. Example:
+          `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de` 
+          <!-- theme: warning -->
+          > #### Watch Out!
+          >
+          > These data describe a end-user (a studio's customer), not a StudioIntern customer.
+
+          ## Student's data
+          You can also send student data to this endpoint. In most cases, these are the children of a customer. But, since StudioIntern distincts between customers and students, **every** student must be sent. So, in case an adult customer is the student, too, you must send his data also in the `sch_*` fields. 
+          To stay with the above example: If Max Mustermann wants to take part in classes for himself, you must send data like this:
+          `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de&sch_vorname[0]=Max&sch_nachname[0]=Mustermann&sch_geb[0]=1998-08-30`
+          As the example shows, you must student's data in an array. This way you can send multiple students at once. But, you can also create more students in separate calls.
+          So if Max Mustermann's daughter Susane will also join a class, you could call the API again with this post data:
+          `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de&sch_vorname[0]=Susan&sch_nachname[0]=Mustermann&sch_geb[0]=2018-06-01`
+          <!-- theme: info -->
+          > ### Non-destructive endpoint!
+          >
+          > The API will **never** delete or overwrite existing data.
+    parameters: []
 components:
   schemas:
     User:
@@ -1001,6 +1189,12 @@ components:
       schema:
         type: string
       description: 'Format: yyyy-mm-dd. Mandatory if parameter period ist set to »weekofdate«.'
+    id:
+      name: id
+      in: path
+      schema:
+        type: integer
+      description: 'ID of user or student, depending of context'
 tags:
   - name: Customer
     description: Access »/cust« endpoints
