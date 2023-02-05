@@ -771,7 +771,7 @@ paths:
                     maxLength: 48
                 sch_geb_tag:
                   type: array
-                  description: 'Students (children''s) date of birth, day'
+                  description: 'Students (children''s) date of birth, day as 2-digit number'
                   items:
                     type: string
                     minLength: 2
@@ -779,7 +779,7 @@ paths:
                     deprecated: true
                 sch_geb_monat:
                   type: array
-                  description: 'Students (children''s) date of birth, month'
+                  description: 'Students (children''s) date of birth, month as 2-digit number'
                   items:
                     type: string
                     minLength: 2
@@ -787,7 +787,7 @@ paths:
                     deprecated: true
                 sch_geb_jahr:
                   type: array
-                  description: 'Students (children''s) date of birth, year'
+                  description: 'Students (children''s) date of birth, year as 4-digit number'
                   items:
                     type: string
                     minLength: 4
@@ -832,7 +832,7 @@ paths:
           You can also send student data to this endpoint. In most cases, these are the children of a customer. But, since StudioIntern distincts between customers and students, **every** student must be sent. So, in case an adult customer is the student, too, you must send his data also in the `sch_*` fields. 
           To stay with the above example: If Max Mustermann wants to take part in classes for himself, you must send data like this:
           `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de&sch_vorname[0]=Max&sch_nachname[0]=Mustermann&sch_geb[0]=1998-08-30`
-          As the example shows, you must student's data in an array. This way you can send multiple students at once. But, you can also create more students in separate calls.
+          As the example shows, you must provide student's data in an array. This way you can send multiple students at once. But, you can also create more students with separate calls.
           So if Max Mustermann's daughter Susane will also join a class, you could call the API again with this post data:
           `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de&sch_vorname[0]=Susan&sch_nachname[0]=Mustermann&sch_geb[0]=2018-06-01`
           <!-- theme: info -->
