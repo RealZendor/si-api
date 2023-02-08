@@ -798,7 +798,7 @@ paths:
                     deprecated: true
                 sch_geb:
                   format: date
-                  description: Students (children's) date of birth
+                  description: 'Students (children''s) date of birth, different formats possible'
                   type: array
                   example: 14.01.2010 | 2010-01-14 | 14/01/2010
                   items:
