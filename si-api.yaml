@@ -10,160 +10,12 @@ info:
     name: Support
     url: api.studiointern.de
     email: support@studiointern.de
-  termsOfService: 'https://www.ballettschul-software.de/agb.php'
+  termsOfService: 'https://api.studiointern.de'
 servers:
-  - url: 'https://api.studiointern.de/{customer_shortname}/v1'
+  - url: 'https://api.studiointern.de'
     description: Generic
 paths:
-  /cust/user:
-    post:
-      summary: Change user's password
-      operationId: post-user
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response'
-              examples: {}
-            application/xml:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  code:
-                    type: integer
-                x-examples:
-                  Example 1:
-                    message: Password updated
-                    code: 0
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-        '412':
-          description: Precondition Failed
-        '417':
-          description: To Less Parameters
-        '500':
-          description: Internal Server Error
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                new_password:
-                  type: string
-                new_password2:
-                  type: string
-            examples:
-              Example 1:
-                value:
-                  email: myname@mail.com
-                  new_password: super!secret!
-                  new_password2: super!secret!
-        description: 'Post email address (for additonal user verification), new password and new password2 (for verification).'
-      description: Change password for a user (dance studio's customer) that has been authorized by Authorization header string.
-      security:
-        - UserPwdBase64: []
-      tags:
-        - Customer
-    get:
-      summary: Get user details
-      operationId: get-user
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                x-examples:
-                  Example 1:
-                    message: OK
-                    code: 0
-                    user:
-                      id: '50066'
-                      firstName: Barbara
-                      lastName: Aachen
-                      email: webmaster@vent.net
-                      students:
-                        - id: '240'
-                          firstName: Barbara
-                          lastName: Aachen
-                          dayOfBirth: '1999-07-12'
-                          email: ''
-                        - id: '241'
-                          firstName: Krawehl
-                          lastName: Aachen
-                          dayOfBirth: '1998-03-12'
-                          email: ''
-                        - id: '109'
-                          firstName: Melusine
-                          lastName: Aachen
-                          dayOfBirth: '2002-01-17'
-                          email: null
-                      active: true
-                properties:
-                  message:
-                    type: string
-                  code:
-                    type: integer
-                  user:
-                    $ref: '#/components/schemas/User'
-              examples:
-                Example 1:
-                  value:
-                    message: OK
-                    code: 0
-                    user:
-                      id: 1234
-                      firstName: Barbara
-                      lastName: Aachen
-                      email: baachen@mymail.de
-                      students:
-                        - id: 12
-                          firstName: Susi
-                          lastName: Aachen
-                          dayOfBirth: '2010-10-12'
-                          email: ''
-                      active: true
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: User Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response'
-        '417':
-          description: Invalid parameter
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response'
-      description: Get some information on a specific user (dance studio's customer). The user ID is retrieved from Authorization header string.
-      security:
-        - UserPwdBase64: []
-      tags:
-        - Customer
-    parameters: []
-  '/cust/courses/{id}':
+  '/{customer_shortname}/v1/cust/courses/{id}':
     get:
       summary: Get current courses of a user's students
       responses:
@@ -231,13 +83,20 @@ paths:
         - UserPwdBase64: []
       tags:
         - Customer
+      x-stoplight:
+        id: g54f6mzt16mq0
     parameters:
       - name: id
         in: path
         schema:
           type: integer
         description: 'ID of user or student, depending of context'
-  '/pub/events/{limit}/{filter}':
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+  '/{customer_shortname}/v1/pub/events/{limit}/{filter}':
     get:
       summary: Get upcoming events
       tags:
@@ -401,10 +260,25 @@ paths:
         A string. Records will be filtered by this string against the `title` field. You have to urlencode the string if it contains characters that will break the query string (e.g. whitespace). It's a goog idea to **always** urlencode the string.
       security:
         - APIKey1: []
+      x-stoplight:
+        id: lecedijl8ts1y
     parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/filter'
-  /pub/courses:
+      - name: limit
+        in: path
+        schema:
+          type: number
+        description: Return not more than this number of records
+      - name: filter
+        in: path
+        schema:
+          type: string
+        description: Return only records that match this string in title field
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+  '/{customer_shortname}/v1/pub/courses':
     get:
       summary: Get all courses of the studio
       tags:
@@ -442,7 +316,15 @@ paths:
       description: Retrieve all courses (classes) that are currently offered by the studio with detail information. The value of the »description« data field depends on the studio's preference setting »Show description in course schedule?«.
       security:
         - APIKey1: []
-  /pub/nextcourses:
+      x-stoplight:
+        id: q0i667gna289p
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+  '/{customer_shortname}/v1/pub/nextcourses':
     get:
       summary: Get upcoming classes
       tags:
@@ -512,7 +394,15 @@ paths:
       description: Retrieve course list for courses that have a start date in the future (starting from today). Only for StudioIntern instances that run in "real calendar" mode (will return a 204 No Content header otherwise).
       security:
         - APIKey1: []
-  '/pub/schedule/{period}/{date}':
+      x-stoplight:
+        id: jo32ci8cctcb3
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+  '/{customer_shortname}/v1/pub/schedule/{period}/{date}':
     get:
       summary: Get classes' schedule
       tags:
@@ -613,6 +503,8 @@ paths:
         The given date will be ignored if the »period« parameter is not set to `weekofdate`. If the »period« parameter ist set to `weekofdate`and no date was given, the API will return a 417 response code.
       security:
         - APIKey1: []
+      x-stoplight:
+        id: enffyqxj6v2mn
     parameters:
       - name: period
         in: path
@@ -624,7 +516,12 @@ paths:
         schema:
           type: string
         description: 'Format: yyyy-mm-dd. Mandatory if parameter period ist set to »weekofdate«.'
-  /pub/studio:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+  '/{customer_shortname}/v1/pub/studio':
     get:
       summary: Get information about the dance studio
       tags:
@@ -666,7 +563,15 @@ paths:
       description: 'Returns some information about your studio. For now (version 1.0), there are no parameters available and only the mail signature is returned.'
       security:
         - APIKey1: []
-  /pub/user:
+      x-stoplight:
+        id: ydvyn646r5psh
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+  '/{customer_shortname}/v1/pub/user':
     post:
       summary: Create new user (studio's customer)
       operationId: post-pub-user
@@ -847,8 +752,15 @@ paths:
           >
           > The API will **never** delete or overwrite existing data.
       deprecated: true
-    parameters: []
-  /pub/customer:
+      x-stoplight:
+        id: u85cgt6uh5fik
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+  '/{customer_shortname}/v2/pub/customer':
     get:
       tags:
         - Public
@@ -875,7 +787,22 @@ paths:
                       steps:
                         type: object
       description: This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
-  /pub/customer/register:
+      parameters: []
+      x-stoplight:
+        id: j3df984xzsxfx
+    servers: []
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+        description: Your studio's shortname
+      - schema:
+          type: string
+        in: header
+        name: Accept
+  '/{customer_shortname}/v2/pub/customer/register':
     post:
       tags:
         - Public
@@ -956,7 +883,19 @@ paths:
       description: |-
         This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address. It is supposed 
         to replace the /pub/user endpoint soon.
-  /pub/student/appointment:
+      x-stoplight:
+        id: 1g96wag9j7a9f
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+      - schema:
+          type: string
+        in: header
+        name: Accept
+  '/{customer_shortname}/v2/pub/student/appointment':
     post:
       tags:
         - Public
@@ -1004,7 +943,24 @@ paths:
           name: User-Agent
           required: true
           description: Value will be provided by StudioIntern support.
-  /pub/cf:
+      x-stoplight:
+        id: ygz95ipko83hk
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+      - schema:
+          type: string
+        in: header
+        name: Accept
+      - schema:
+          type: string
+        in: header
+        name: User-Agent
+        required: true
+  '/{customer_shortname}/v2/pub/cf':
     get:
       tags:
         - Public
@@ -1026,7 +982,22 @@ paths:
         This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
-  /pub/cf/ages:
+      x-stoplight:
+        id: 8pj8qm4khf8ax
+      security:
+        - Authorization: []
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+      - schema:
+          type: string
+        in: header
+        name: Accept
+        description: application/json
+  '/{customer_shortname}/v2/pub/cf/ages':
     get:
       tags:
         - Public
@@ -1068,7 +1039,26 @@ paths:
         This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
-  /pub/cf/styles:
+      x-stoplight:
+        id: dk5k8n3uao7gk
+      security:
+        - Authorization: []
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Accept
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+      - schema:
+          type: string
+        in: header
+        name: Accept
+  '/{customer_shortname}/v2/pub/cf/styles':
     get:
       tags:
         - Public
@@ -1108,7 +1098,19 @@ paths:
         This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
-  /pub/cf/levels:
+      x-stoplight:
+        id: s4guuv0ozsrns
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+      - schema:
+          type: string
+        in: header
+        name: Accept
+  '/{customer_shortname}/v2/pub/cf/levels':
     get:
       tags:
         - Public
@@ -1155,7 +1157,19 @@ paths:
         This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
-  /pub/cf/lessons:
+      x-stoplight:
+        id: cy28ud4g0dcq9
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+      - schema:
+          type: string
+        in: header
+        name: Accept
+  '/{customer_shortname}/v2/pub/cf/lessons':
     get:
       tags:
         - Public
@@ -1214,7 +1228,19 @@ paths:
         This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
-  /pub/cf/dates:
+      x-stoplight:
+        id: 87mfpo6i3afz9
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+      - schema:
+          type: string
+        in: header
+        name: Accept
+  '/{customer_shortname}/v2/pub/cf/dates':
     get:
       tags:
         - Public
@@ -1251,6 +1277,18 @@ paths:
         This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
+      x-stoplight:
+        id: ieppwq2u3erft
+    parameters:
+      - schema:
+          type: string
+        name: customer_shortname
+        in: path
+        required: true
+      - schema:
+          type: string
+        in: header
+        name: Accept
 components:
   schemas:
     User:
@@ -1565,15 +1603,13 @@ components:
         color:
           type: string
   securitySchemes:
-    APIKey1:
-      name: Authorization
+    Authorization:
+      type: http
+      scheme: bearer
+    UsrPwdBase64:
+      name: Digest
       type: apiKey
       in: header
-      description: ''
-    UserPwdBase64:
-      type: http
-      scheme: basic
-      description: ''
   responses: {}
   parameters:
     limit:
@@ -1611,3 +1647,5 @@ tags:
     description: Access »/cust« endpoints
   - name: Public
     description: Access »/pub« endpoints
+security:
+  - Authorization: []
