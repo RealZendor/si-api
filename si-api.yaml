@@ -597,7 +597,7 @@ paths:
         Delivers the day or week schedule for all classes that will take place in the specific week. If no courses takes place in the specified period, the API will return a `204 No Content` response header.
         ## Parameters
         ### period
-        Can be one of these values: `today`, `week`, `weekofdate`. Defaults to `today`. 
+        Can be one of these values: `today`, `week`, `weekofdate`. Defaults to `today`.
         #### today
         Get the schedule of the current day.
         #### week
@@ -702,9 +702,11 @@ paths:
       tags:
         - Public
       description: |-
-        This endpoint creates a new end customer (user). Please don't mix up with StudioIntern's customer. 
-        The intention of this endpoint is to send data from contact forms on the public studio's website where people fill in the form in order to ask for a test class. 
-        Many of the StudioIntern's [extra modules](https://www.ballettschul-software.de/zusatzmodule.php) use this endpoint, too. 
+        This endpoint creates a new end customer (user). Please don't mix up with StudioIntern's customer.
+        The intention of this endpoint is to send data from contact forms on the public studio's website where people fill in the form in order to ask for a test class.
+        Many of the StudioIntern's [extra modules](https://www.ballettschul-software.de/zusatzmodule.php) use this endpoint, too.
+
+        **This endpoint will be replaced by /pub/customer/register in version 2 of this API.**
       security:
         - APIKey1: []
       requestBody:
@@ -827,14 +829,14 @@ paths:
         description: |-
           ## General usage
           This endpoint is intented to receive data from an online contact form. You must name the form fields exactly as described here. Though in this API documentation all fields are part of an anonymous object, in real world you will not send an object but just regular POST data. Example:
-          `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de` 
+          `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de`
           <!-- theme: warning -->
           > #### Watch Out!
           >
           > These data describe a end-user (a studio's customer), not a StudioIntern customer.
 
           ## Student's data
-          You can also send student data to this endpoint. In most cases, these are the children of a customer. But, since StudioIntern distincts between customers and students, **every** student must be sent. So, in case an adult customer is the student, too, you must send his data also in the `sch_*` fields. 
+          You can also send student data to this endpoint. In most cases, these are the children of a customer. But, since StudioIntern distincts between customers and students, **every** student must be sent. So, in case an adult customer is the student, too, you must send his data also in the `sch_*` fields.
           To stay with the above example: If Max Mustermann wants to take part in classes for himself, you must send data like this:
           `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de&sch_vorname[0]=Max&sch_nachname[0]=Mustermann&sch_geb[0]=1998-08-30`
           As the example shows, you must provide student's data in an array. This way you can send multiple students at once. But, you can also create more students with separate calls.
@@ -844,7 +846,411 @@ paths:
           > ### Non-destructive endpoint!
           >
           > The API will **never** delete or overwrite existing data.
+      deprecated: true
     parameters: []
+  /pub/customer:
+    get:
+      tags:
+        - Public
+        - Customer
+        - Core
+      summary: Get customer registration flow information
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      plugin_info:
+                        $ref: '#/components/schemas/PluginInfo'
+                      steps:
+                        type: object
+      description: This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+  /pub/customer/register:
+    post:
+      tags:
+        - Public
+        - Customer
+        - Core
+      summary: Register a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - anrede
+                - vorname
+                - nachname
+                - mobil
+                - email
+                - ist_schueler
+              properties:
+                anrede:
+                  type: string
+                  maxLength: 12
+                titel:
+                  type: string
+                  maxLength: 12
+                vorname:
+                  type: string
+                  maxLength: 64
+                nachname:
+                  type: string
+                  maxLength: 48
+                adresse:
+                  type: string
+                  maxLength: 64
+                adresszusatz:
+                  type: string
+                  maxLength: 64
+                plz:
+                  type: string
+                  maxLength: 8
+                ort:
+                  type: string
+                  maxLength: 64
+                telefon:
+                  type: string
+                mobil:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                bemerkungen:
+                  type: string
+                  maxLength: 512
+                ist_schueler:
+                  type: integer
+                  enum:
+                    - 1
+                    - 2
+                notify:
+                  type: integer
+                notify_error:
+                  type: string
+                  format: email
+                no_custos:
+                  type: integer
+      responses:
+        '200':
+          description: Customer already exists
+        '201':
+          description: Customer created successfully
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: |-
+        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address. It is supposed 
+        to replace the /pub/user endpoint soon.
+  /pub/student/appointment:
+    post:
+      tags:
+        - Public
+        - Student
+        - Core
+        - Appointment
+        - CourseFinder
+        - TrialClass
+      summary: Create a new appointment for a student (trial class)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - lesson_id
+                - student_id
+                - date
+              properties:
+                lesson_id:
+                  type: integer
+                student_id:
+                  type: integer
+                date:
+                  type: string
+                  format: date
+                message:
+                  type: string
+                  maxLength: 512
+      responses:
+        '201':
+          description: Appointment created successfully
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: User-Agent
+          required: true
+          description: Value will be provided by StudioIntern support.
+  /pub/cf:
+    get:
+      tags:
+        - Public
+        - CourseFinder
+      summary: Get CourseFinder flow information
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plugin_info:
+                    $ref: '#/components/schemas/PluginInfo'
+                  steps:
+                    type: object
+      description: |-
+        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+
+        **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
+  /pub/cf/ages:
+    get:
+      tags:
+        - Public
+        - CourseFinder
+      summary: Get available age groups
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plugin_info:
+                    $ref: '#/components/schemas/PluginInfo'
+                  ages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        from:
+                          type: integer
+                        to:
+                          type: integer
+                        image:
+                          type: string
+                          nullable: true
+        '403':
+          description: Product not booked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: |-
+        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+
+        **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
+  /pub/cf/styles:
+    get:
+      tags:
+        - Public
+        - CourseFinder
+      summary: Get available dance styles for age group
+      parameters:
+        - name: age_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plugin_info:
+                    $ref: '#/components/schemas/PluginInfo'
+                  styles:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        image:
+                          type: string
+                          nullable: true
+      description: |-
+        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+
+        **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
+  /pub/cf/levels:
+    get:
+      tags:
+        - Public
+        - CourseFinder
+      summary: Get available levels for age and style
+      parameters:
+        - name: age_id
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: style_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plugin_info:
+                    $ref: '#/components/schemas/PluginInfo'
+                  levels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        stars:
+                          type: integer
+                        description:
+                          type: string
+                        image:
+                          type: string
+                          nullable: true
+      description: |-
+        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+
+        **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
+  /pub/cf/lessons:
+    get:
+      tags:
+        - Public
+        - CourseFinder
+      summary: Get available lessons for selected criteria
+      parameters:
+        - name: age_id
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: style_id
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: level_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plugin_info:
+                    $ref: '#/components/schemas/PluginInfo'
+                  lessons:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        tlight:
+                          type: string
+                        color:
+                          type: string
+                        teacher:
+                          type: integer
+                        weekday:
+                          type: integer
+                        begin:
+                          type: string
+                        end:
+                          type: string
+      description: |-
+        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+
+        **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
+  /pub/cf/dates:
+    get:
+      tags:
+        - Public
+        - CourseFinder
+      summary: Get available dates for a lesson
+      parameters:
+        - name: lesson_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plugin_info:
+                    $ref: '#/components/schemas/PluginInfo'
+                  dates:
+                    type: array
+                    items:
+                      type: string
+                      format: date
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: |-
+        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+
+        **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
 components:
   schemas:
     User:
