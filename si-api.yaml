@@ -786,7 +786,7 @@ paths:
                         $ref: '#/components/schemas/PluginInfo'
                       steps:
                         type: object
-      description: This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+      description: This endpoint works only for the version 2 of the API.
       parameters: []
       x-stoplight:
         id: j3df984xzsxfx
@@ -816,7 +816,6 @@ paths:
             schema:
               type: object
               required:
-                - anrede
                 - vorname
                 - nachname
                 - mobil
@@ -862,6 +861,9 @@ paths:
                   enum:
                     - 1
                     - 2
+                  description: |-
+                    1: The customer is the same person as the student. Customer's data will be used to create a student.
+                    2: The customer is not the same person as the student. In this case, the fields sch_vorname, sch_nachname and sch_geb are required.
                 notify:
                   type: integer
                 notify_error:
@@ -869,6 +871,64 @@ paths:
                   format: email
                 no_custos:
                   type: integer
+                  description: 'Don''t use Custos spam filter service. In order to use the Custos service, you must have an account.'
+                sch_vorname:
+                  type: array
+                  x-stoplight:
+                    id: fjef23n63u2sw
+                  minItems: 1
+                  description: First name of the student. Required if the field 'ist_schuler' has the value '2'.
+                  items:
+                    x-stoplight:
+                      id: 9jyhlv9bkje0r
+                    type: string
+                  writeOnly: true
+                sch_nachname:
+                  type: array
+                  x-stoplight:
+                    id: ujn3p1uvdpji9
+                  minItems: 1
+                  description: Last name of the student. Required if the field 'ist_schuler' has the value '2'.
+                  items:
+                    x-stoplight:
+                      id: j686pvrzjspez
+                    type: string
+                  writeOnly: true
+                sch_geb:
+                  type: array
+                  x-stoplight:
+                    id: a8envpqvf0ktf
+                  minItems: 1
+                  description: Date of birth of the student(s). Required if the field 'ist_schuler' has the value '2'.
+                  items:
+                    x-stoplight:
+                      id: krq9wmbs5wppq
+                    type: string
+                    pattern: '^\d{4-\d{2}-\d{2}$'
+                    format: date
+                    example: '2025-03-26'
+                    writeOnly: true
+                  writeOnly: true
+        description: |-
+          ## General usage
+          This endpoint is intented to receive data from an online contact form. You must name the form fields exactly as described here. Though in this API documentation all fields are part of an anonymous object, in real world you will not send an object but just regular POST data. Example:
+          `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de`
+          <!-- theme: warning -->
+          > #### Watch Out!
+          >
+          > These data describe a end-user (a studio's customer), not a StudioIntern customer.
+
+          ## Student's data
+          You can also send student data to this endpoint. In most cases, these are the children of a customer. But, since StudioIntern distincts between customers and students, **every** student must be sent. So, in case an adult customer is the student, too, you must send his data also in the `sch_*` fields.
+          To stay with the above example: If Max Mustermann wants to take part in classes for himself, you must send data like this:
+          `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de&sch_vorname[0]=Max&sch_nachname[0]=Mustermann&sch_geb[0]=1998-08-30`
+          As the example shows, you must provide student's data in an array. This way you can send multiple students at once. But, you can also create more students with separate calls.
+          So if Max Mustermann's daughter Susane will also join a class, you could call the API again with this post data:
+          `anrede=Herr&vorname=Max&nachname=Mustermann&email=max@mustermann.de&sch_vorname[0]=Susan&sch_nachname[0]=Mustermann&sch_geb[0]=2018-06-01`
+          <!-- theme: info -->
+          > ### Non-destructive endpoint!
+          >
+          > The API will **never** delete or overwrite existing data.
       responses:
         '200':
           description: Customer already exists
@@ -880,9 +940,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: |-
-        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address. It is supposed 
-        to replace the /pub/user endpoint soon.
+      description: This endpoint works only for the version 2 of the API. It will replace the /pub/user (v1) endpoint soon.
       x-stoplight:
         id: 1g96wag9j7a9f
     parameters:
@@ -923,6 +981,7 @@ paths:
                 date:
                   type: string
                   format: date
+                  description: 'Date format: Y-m-d'
                 message:
                   type: string
                   maxLength: 512
@@ -935,7 +994,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+      description: This endpoint works only for the version 2 of the API.
       parameters:
         - schema:
             type: string
@@ -979,7 +1038,7 @@ paths:
                   steps:
                     type: object
       description: |-
-        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+        This endpoint works only for the version 2 of the API.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
       x-stoplight:
@@ -1036,7 +1095,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       description: |-
-        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+        This endpoint works only for the version 2 of the API.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
       x-stoplight:
@@ -1095,7 +1154,7 @@ paths:
                           type: string
                           nullable: true
       description: |-
-        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+        This endpoint works only for the version 2 of the API.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
       x-stoplight:
@@ -1154,7 +1213,7 @@ paths:
                           type: string
                           nullable: true
       description: |-
-        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+        This endpoint works only for the version 2 of the API.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
       x-stoplight:
@@ -1225,7 +1284,7 @@ paths:
                         end:
                           type: string
       description: |-
-        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+        This endpoint works only for the version 2 of the API.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
       x-stoplight:
@@ -1274,7 +1333,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       description: |-
-        This endpoint works only for the version 2 of the API. Please use the api.studiointern.de/v1 address.
+        This endpoint works only for the version 2 of the API.
 
         **It requires the CourseFinder PlugIn installed in your StudioIntern instance.**
       x-stoplight:
